@@ -1,6 +1,7 @@
 use egui::Context;
 use std::sync::Arc;
 
+use crate::config::constants::*;
 use crate::library::scanner::LibraryScanner;
 use crate::ui::toolbar::ToolbarAction;
 
@@ -81,17 +82,17 @@ pub(crate) fn handle_toolbar_action(app: &mut DocReaderApp, action: ToolbarActio
             go_to_page(app, page);
         }
         ToolbarAction::ZoomIn => {
-            app.zoom = (app.zoom + 0.1).min(3.0);
+            app.zoom = (app.zoom + ZOOM_STEP).min(ZOOM_MAX);
             app.page_cache.clear();
             render_manager::request_render(app);
         }
         ToolbarAction::ZoomOut => {
-            app.zoom = (app.zoom - 0.1).max(0.3);
+            app.zoom = (app.zoom - ZOOM_STEP).max(ZOOM_MIN);
             app.page_cache.clear();
             render_manager::request_render(app);
         }
         ToolbarAction::ZoomReset => {
-            app.zoom = 1.0;
+            app.zoom = ZOOM_DEFAULT;
             app.page_cache.clear();
             render_manager::request_render(app);
         }

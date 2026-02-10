@@ -5,6 +5,8 @@ use std::collections::HashMap;
 use std::io::Write;
 use std::sync::Mutex;
 
+use crate::config::constants::*;
+
 use super::text_render::TextPageRenderer;
 use super::traits::DocumentRenderer;
 
@@ -30,9 +32,9 @@ impl Default for EpubRenderer {
 impl EpubRenderer {
     fn extract_paragraphs(bytes: &[u8]) -> Result<Vec<String>> {
         // Write bytes to a temp file since rbook requires a file path
-        let temp_dir = std::env::temp_dir().join("docreader-cloud");
+        let temp_dir = std::env::temp_dir().join(TEMP_DIR_NAME);
         std::fs::create_dir_all(&temp_dir)?;
-        let temp_path = temp_dir.join("_temp_epub.epub");
+        let temp_path = temp_dir.join(TEMP_EPUB_FILENAME);
         {
             let mut f = std::fs::File::create(&temp_path)?;
             f.write_all(bytes)?;
@@ -141,8 +143,8 @@ impl EpubRenderer {
         use std::hash::{Hash, Hasher};
         let mut hasher = std::collections::hash_map::DefaultHasher::new();
         bytes.len().hash(&mut hasher);
-        if bytes.len() >= 256 {
-            bytes[..256].hash(&mut hasher);
+        if bytes.len() >= HASH_BUFFER_SIZE {
+            bytes[..HASH_BUFFER_SIZE].hash(&mut hasher);
         } else {
             bytes.hash(&mut hasher);
         }
@@ -155,7 +157,7 @@ impl EpubRenderer {
         {
             let cache = self.cache.lock().unwrap();
             if let Some(cached) = cache.get(&hash) {
-                if (cached.scale - scale).abs() < 0.01 {
+                if (cached.scale - scale).abs() < SCALE_COMPARE_EPSILON {
                     return Ok(cached.pages.clone());
                 }
             }

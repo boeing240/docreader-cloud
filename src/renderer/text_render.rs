@@ -2,12 +2,7 @@ use ab_glyph::{Font, FontRef, PxScale, PxScaleFont, ScaleFont};
 use image::{Rgba, RgbaImage};
 use imageproc::drawing::draw_text_mut;
 
-const PAGE_WIDTH: u32 = 800;
-const PAGE_HEIGHT: u32 = 1100;
-const MARGIN: u32 = 40;
-const FONT_SIZE: f32 = 20.0;
-const LINE_HEIGHT: f32 = 28.0;
-const PARAGRAPH_SPACING: f32 = 14.0;
+use crate::config::constants::*;
 
 static EMBEDDED_FONT: &[u8] = include_bytes!("../../libs/fonts/NotoSans-Regular.ttf");
 
@@ -24,12 +19,12 @@ impl TextPageRenderer {
     /// Paginate text paragraphs into virtual pages.
     /// Returns a Vec of pages, where each page is a Vec of lines (strings).
     pub fn paginate(&self, paragraphs: &[String], scale: f32) -> Vec<Vec<String>> {
-        let font_size = FONT_SIZE * scale;
-        let line_height = LINE_HEIGHT * scale;
-        let paragraph_spacing = PARAGRAPH_SPACING * scale;
-        let margin = MARGIN as f32 * scale;
-        let page_height = PAGE_HEIGHT as f32 * scale;
-        let page_width = PAGE_WIDTH as f32 * scale;
+        let font_size = TEXT_FONT_SIZE * scale;
+        let line_height = TEXT_LINE_HEIGHT * scale;
+        let paragraph_spacing = TEXT_PARAGRAPH_SPACING * scale;
+        let margin = TEXT_PAGE_MARGIN as f32 * scale;
+        let page_height = TEXT_PAGE_HEIGHT as f32 * scale;
+        let page_width = TEXT_PAGE_WIDTH as f32 * scale;
         let usable_width = page_width - 2.0 * margin;
         let usable_height = page_height - 2.0 * margin;
 
@@ -74,11 +69,11 @@ impl TextPageRenderer {
 
     /// Render a single page (given its lines) to an RgbaImage.
     pub fn render_page(&self, lines: &[String], scale: f32) -> RgbaImage {
-        let width = (PAGE_WIDTH as f32 * scale) as u32;
-        let height = (PAGE_HEIGHT as f32 * scale) as u32;
-        let margin = (MARGIN as f32 * scale) as i32;
-        let font_size = FONT_SIZE * scale;
-        let line_height = LINE_HEIGHT * scale;
+        let width = (TEXT_PAGE_WIDTH as f32 * scale) as u32;
+        let height = (TEXT_PAGE_HEIGHT as f32 * scale) as u32;
+        let margin = (TEXT_PAGE_MARGIN as f32 * scale) as i32;
+        let font_size = TEXT_FONT_SIZE * scale;
+        let line_height = TEXT_LINE_HEIGHT * scale;
 
         let mut image = RgbaImage::from_pixel(width, height, Rgba([255, 255, 255, 255]));
         let color = Rgba([0, 0, 0, 255]);
@@ -209,8 +204,8 @@ mod tests {
         let r = renderer();
         let lines = vec!["Test line".to_string()];
         let image = r.render_page(&lines, 1.0);
-        assert_eq!(image.width(), PAGE_WIDTH);
-        assert_eq!(image.height(), PAGE_HEIGHT);
+        assert_eq!(image.width(), TEXT_PAGE_WIDTH);
+        assert_eq!(image.height(), TEXT_PAGE_HEIGHT);
     }
 
     #[test]
@@ -218,8 +213,8 @@ mod tests {
         let r = renderer();
         let lines = vec!["Test".to_string()];
         let image = r.render_page(&lines, 2.0);
-        assert_eq!(image.width(), PAGE_WIDTH * 2);
-        assert_eq!(image.height(), PAGE_HEIGHT * 2);
+        assert_eq!(image.width(), TEXT_PAGE_WIDTH * 2);
+        assert_eq!(image.height(), TEXT_PAGE_HEIGHT * 2);
     }
 
     #[test]
@@ -235,7 +230,7 @@ mod tests {
     #[test]
     fn test_wrap_text_short() {
         let r = renderer();
-        let px_scale = PxScale::from(FONT_SIZE);
+        let px_scale = PxScale::from(TEXT_FONT_SIZE);
         let scaled_font = r.font.as_scaled(px_scale);
         let lines = TextPageRenderer::wrap_text("Hello", 1000.0, &scaled_font);
         assert_eq!(lines.len(), 1);
@@ -245,7 +240,7 @@ mod tests {
     #[test]
     fn test_wrap_text_empty() {
         let r = renderer();
-        let px_scale = PxScale::from(FONT_SIZE);
+        let px_scale = PxScale::from(TEXT_FONT_SIZE);
         let scaled_font = r.font.as_scaled(px_scale);
         let lines = TextPageRenderer::wrap_text("", 1000.0, &scaled_font);
         assert_eq!(lines.len(), 1);
@@ -255,7 +250,7 @@ mod tests {
     #[test]
     fn test_wrap_text_wraps_long_line() {
         let r = renderer();
-        let px_scale = PxScale::from(FONT_SIZE);
+        let px_scale = PxScale::from(TEXT_FONT_SIZE);
         let scaled_font = r.font.as_scaled(px_scale);
         let long_text = "word ".repeat(100);
         let lines = TextPageRenderer::wrap_text(&long_text.trim(), 200.0, &scaled_font);
@@ -269,7 +264,7 @@ mod tests {
     #[test]
     fn test_measure_text_positive() {
         let r = renderer();
-        let px_scale = PxScale::from(FONT_SIZE);
+        let px_scale = PxScale::from(TEXT_FONT_SIZE);
         let scaled_font = r.font.as_scaled(px_scale);
         let width = TextPageRenderer::measure_text("Hello", &scaled_font);
         assert!(width > 0.0);
@@ -278,7 +273,7 @@ mod tests {
     #[test]
     fn test_measure_text_empty() {
         let r = renderer();
-        let px_scale = PxScale::from(FONT_SIZE);
+        let px_scale = PxScale::from(TEXT_FONT_SIZE);
         let scaled_font = r.font.as_scaled(px_scale);
         let width = TextPageRenderer::measure_text("", &scaled_font);
         assert!((width - 0.0).abs() < f32::EPSILON);
@@ -287,7 +282,7 @@ mod tests {
     #[test]
     fn test_measure_text_longer_is_wider() {
         let r = renderer();
-        let px_scale = PxScale::from(FONT_SIZE);
+        let px_scale = PxScale::from(TEXT_FONT_SIZE);
         let scaled_font = r.font.as_scaled(px_scale);
         let w1 = TextPageRenderer::measure_text("Hi", &scaled_font);
         let w2 = TextPageRenderer::measure_text("Hello World", &scaled_font);

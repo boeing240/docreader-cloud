@@ -2,6 +2,7 @@ use image::RgbaImage;
 use std::sync::mpsc;
 use std::sync::Arc;
 
+use crate::config::constants::PDF_SCALE_MULTIPLIER;
 use crate::renderer::format::DocumentFormat;
 use crate::renderer::RendererRegistry;
 
@@ -53,7 +54,7 @@ pub(crate) fn spawn_render_thread() -> (mpsc::Sender<RenderRequest>, mpsc::Recei
             let total_pages = renderer.get_page_count(&req.bytes).unwrap_or(0);
 
             let scale = if req.format == DocumentFormat::Pdf {
-                req.zoom * 1.5
+                req.zoom * PDF_SCALE_MULTIPLIER
             } else {
                 req.zoom
             };

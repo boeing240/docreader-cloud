@@ -1,5 +1,6 @@
 use egui::Ui;
 
+use crate::config::constants::*;
 use crate::library::book::Book;
 use crate::library::progress::BookProgress;
 
@@ -36,7 +37,7 @@ impl Sidebar {
                         let progress_fraction = bp.current_page as f32 / total.max(1) as f32;
                         ui.add(
                             egui::ProgressBar::new(progress_fraction)
-                                .desired_width(80.0)
+                                .desired_width(SIDEBAR_PROGRESS_BAR_WIDTH)
                                 .show_percentage(),
                         );
                     });
@@ -46,7 +47,7 @@ impl Sidebar {
                     ui.label("Не начато");
                 }
 
-                ui.add_space(8.0);
+                ui.add_space(SIDEBAR_ITEM_SPACING);
 
                 if response.clicked() {
                     on_select(&book.file_hash);

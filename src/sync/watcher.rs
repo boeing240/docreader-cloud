@@ -4,6 +4,8 @@ use std::path::Path;
 use std::sync::mpsc::{channel, Receiver, TryRecvError};
 use std::time::Duration;
 
+use crate::config::constants::FILE_WATCHER_POLL_SECS;
+
 pub enum SyncEvent {
     FileModified,
     FileDeleted,
@@ -22,7 +24,7 @@ impl SyncWatcher {
             move |res| {
                 let _ = tx.send(res);
             },
-            Config::default().with_poll_interval(Duration::from_secs(2)),
+            Config::default().with_poll_interval(Duration::from_secs(FILE_WATCHER_POLL_SECS)),
         )
         .context("Failed to create file watcher")?;
 

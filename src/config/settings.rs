@@ -4,6 +4,8 @@ use std::fs;
 use std::path::PathBuf;
 use uuid::Uuid;
 
+use super::constants::*;
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AppSettings {
     pub library_path: PathBuf,
@@ -25,14 +27,14 @@ impl Default for AppSettings {
             .unwrap_or_else(|| PathBuf::from("."));
 
         Self {
-            library_path: home.join("YandexDisk").join("Books"),
+            library_path: home.join(DEFAULT_CLOUD_DIR).join(DEFAULT_BOOKS_DIR),
             progress_file_path: home
-                .join("YandexDisk")
-                .join("Books")
-                .join("reading_progress.json"),
+                .join(DEFAULT_CLOUD_DIR)
+                .join(DEFAULT_BOOKS_DIR)
+                .join(PROGRESS_FILENAME),
             device_id,
-            zoom_level: 1.0,
-            auto_save_interval_secs: 5,
+            zoom_level: ZOOM_DEFAULT,
+            auto_save_interval_secs: AUTO_SAVE_INTERVAL_SECS_DEFAULT,
             last_opened_book: None,
         }
     }
@@ -40,10 +42,10 @@ impl Default for AppSettings {
 
 impl AppSettings {
     pub fn config_path() -> Result<PathBuf> {
-        let proj_dirs = directories::ProjectDirs::from("", "", "docreader-cloud")
+        let proj_dirs = directories::ProjectDirs::from("", "", PROJECT_NAME)
             .context("Failed to get project directories")?;
 
-        Ok(proj_dirs.config_dir().join("settings.json"))
+        Ok(proj_dirs.config_dir().join(SETTINGS_FILENAME))
     }
 
     pub fn load() -> Result<Self> {
@@ -84,8 +86,11 @@ mod tests {
     fn test_default_settings() {
         let settings = AppSettings::default();
         assert!(!settings.device_id.is_empty());
-        assert_eq!(settings.zoom_level, 1.0);
-        assert_eq!(settings.auto_save_interval_secs, 5);
+        assert_eq!(settings.zoom_level, ZOOM_DEFAULT);
+        assert_eq!(
+            settings.auto_save_interval_secs,
+            AUTO_SAVE_INTERVAL_SECS_DEFAULT
+        );
         assert!(settings.last_opened_book.is_none());
     }
 
@@ -117,7 +122,7 @@ mod tests {
         let path = AppSettings::config_path();
         assert!(path.is_ok());
         let path = path.unwrap();
-        assert!(path.to_string_lossy().contains("docreader-cloud"));
+        assert!(path.to_string_lossy().contains(PROJECT_NAME));
     }
 
     #[test]

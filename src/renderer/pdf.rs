@@ -4,15 +4,17 @@ use once_cell::sync::Lazy;
 use pdfium_render::prelude::*;
 use std::path::{Path, PathBuf};
 
+use crate::config::constants::*;
+
 use super::traits::DocumentRenderer;
 
 static EMBEDDED_PDFIUM: &[u8] = include_bytes!("../../libs/pdfium.dll");
 
 static PDFIUM_DLL_PATH: Lazy<Result<PathBuf, String>> = Lazy::new(|| {
-    let dir = std::env::temp_dir().join("docreader-cloud");
+    let dir = std::env::temp_dir().join(TEMP_DIR_NAME);
     std::fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
 
-    let dll_path = dir.join("pdfium.dll");
+    let dll_path = dir.join(PDFIUM_DLL_FILENAME);
 
     // Write only if missing or size differs (new version)
     let needs_write = match std::fs::metadata(&dll_path) {

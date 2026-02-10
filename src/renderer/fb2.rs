@@ -5,6 +5,8 @@ use quick_xml::Reader;
 use std::collections::HashMap;
 use std::sync::Mutex;
 
+use crate::config::constants::*;
+
 use super::text_render::TextPageRenderer;
 use super::traits::DocumentRenderer;
 
@@ -98,8 +100,8 @@ impl Fb2Renderer {
         use std::hash::{Hash, Hasher};
         let mut hasher = std::collections::hash_map::DefaultHasher::new();
         bytes.len().hash(&mut hasher);
-        if bytes.len() >= 256 {
-            bytes[..256].hash(&mut hasher);
+        if bytes.len() >= HASH_BUFFER_SIZE {
+            bytes[..HASH_BUFFER_SIZE].hash(&mut hasher);
         } else {
             bytes.hash(&mut hasher);
         }
@@ -112,7 +114,7 @@ impl Fb2Renderer {
         {
             let cache = self.cache.lock().unwrap();
             if let Some(cached) = cache.get(&hash) {
-                if (cached.scale - scale).abs() < 0.01 {
+                if (cached.scale - scale).abs() < SCALE_COMPARE_EPSILON {
                     return Ok(cached.pages.clone());
                 }
             }

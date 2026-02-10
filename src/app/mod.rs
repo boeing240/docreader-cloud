@@ -10,6 +10,7 @@ use std::sync::mpsc;
 use std::sync::Arc;
 use std::time::{Duration, Instant};
 
+use crate::config::constants::*;
 use crate::config::settings::AppSettings;
 use crate::library::book::Book;
 use crate::library::progress::ReadingProgress;
@@ -100,12 +101,12 @@ impl DocReaderApp {
             current_document_bytes: None,
             storage,
             watcher,
-            page_cache: PageCache::new(20),
+            page_cache: PageCache::new(PAGE_CACHE_CAPACITY),
             render_tx,
             result_rx,
             is_rendering: false,
             first_frame: true,
-            zoom: 1.0,
+            zoom: ZOOM_DEFAULT,
             pixels_per_point: 1.0,
             last_save: Instant::now(),
             needs_save: false,
@@ -136,7 +137,7 @@ impl eframe::App for DocReaderApp {
 
         // Track HiDPI scale factor; re-render if it changed
         let ppp = ctx.pixels_per_point();
-        if (ppp - self.pixels_per_point).abs() > 0.01 {
+        if (ppp - self.pixels_per_point).abs() > HIDPI_CHANGE_THRESHOLD {
             self.pixels_per_point = ppp;
             self.page_cache.clear();
             render_manager::request_render(self);
@@ -187,7 +188,8 @@ impl eframe::App for DocReaderApp {
 
                 ui.label(format!(
                     "Устройство: {}",
-                    &self.settings.device_id[..8.min(self.settings.device_id.len())]
+                    &self.settings.device_id
+                        [..DEVICE_ID_DISPLAY_LEN.min(self.settings.device_id.len())]
                 ));
                 ui.separator();
                 ui.label(format!("Книг: {}", self.books.len()));
@@ -197,8 +199,8 @@ impl eframe::App for DocReaderApp {
         // Left panel (library sidebar)
         egui::SidePanel::left("library")
             .resizable(true)
-            .default_width(250.0)
-            .min_width(150.0)
+            .default_width(SIDEBAR_DEFAULT_WIDTH)
+            .min_width(SIDEBAR_MIN_WIDTH)
             .show(ctx, |ui| {
                 let selected = self.selected_book_hash.clone();
                 let mut new_selection = None;
@@ -239,7 +241,7 @@ impl eframe::App for DocReaderApp {
         progress_manager::maybe_save_progress(self);
 
         // Request repaint for smooth updates
-        ctx.request_repaint_after(Duration::from_millis(100));
+        ctx.request_repaint_after(Duration::from_millis(REPAINT_INTERVAL_MS));
     }
 
     fn on_exit(&mut self, _gl: Option<&eframe::glow::Context>) {

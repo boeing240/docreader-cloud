@@ -8,18 +8,19 @@ mod sync;
 mod ui;
 
 use app::DocReaderApp;
+use config::constants::*;
 
 fn main() -> eframe::Result<()> {
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
-            .with_inner_size([1200.0, 800.0])
-            .with_min_inner_size([800.0, 600.0])
-            .with_title("DocReader"),
+            .with_inner_size([WINDOW_INITIAL_WIDTH, WINDOW_INITIAL_HEIGHT])
+            .with_min_inner_size([WINDOW_MIN_WIDTH, WINDOW_MIN_HEIGHT])
+            .with_title(WINDOW_TITLE),
         ..Default::default()
     };
 
     eframe::run_native(
-        "DocReader",
+        WINDOW_TITLE,
         options,
         Box::new(|cc| Ok(Box::new(DocReaderApp::new(cc)))),
     )
