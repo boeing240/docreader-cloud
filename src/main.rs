@@ -3,24 +3,24 @@
 mod app;
 mod config;
 mod library;
-mod pdf;
+mod renderer;
 mod sync;
 mod ui;
 
-use app::PdfReaderApp;
+use app::DocReaderApp;
 
 fn main() -> eframe::Result<()> {
     let options = eframe::NativeOptions {
         viewport: egui::ViewportBuilder::default()
             .with_inner_size([1200.0, 800.0])
             .with_min_inner_size([800.0, 600.0])
-            .with_title("PDF Reader"),
+            .with_title("DocReader"),
         ..Default::default()
     };
 
     eframe::run_native(
-        "PDF Reader",
+        "DocReader",
         options,
-        Box::new(|cc| Ok(Box::new(PdfReaderApp::new(cc)))),
+        Box::new(|cc| Ok(Box::new(DocReaderApp::new(cc)))),
     )
 }

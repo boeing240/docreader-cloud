@@ -21,7 +21,8 @@ impl Sidebar {
                 let is_selected = selected_book == Some(&book.file_hash);
                 let book_progress = progress.get(&book.file_hash);
 
-                let response = ui.selectable_label(is_selected, &book.file_name);
+                let label = format!("[{}] {}", book.format.display_name(), book.file_name);
+                let response = ui.selectable_label(is_selected, label);
 
                 if let Some(bp) = book_progress {
                     // Use book.total_pages if available (from scanner), fallback to progress

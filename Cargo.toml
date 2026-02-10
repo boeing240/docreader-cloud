@@ -1,5 +1,5 @@
 [package]
-name = "pdf-reader-cloud"
+name = "docreader-cloud"
 version = "0.1.0"
 edition = "2021"
 
@@ -21,6 +21,16 @@ chrono = { version = "0.4", features = ["serde"] }
 
 # File watching
 notify = "7.0"
+
+# EPUB
+rbook = "0.4"
+
+# FB2
+quick-xml = "0.37"
+
+# Text rendering (for EPUB/FB2)
+ab_glyph = "0.2"
+imageproc = "0.25"
 
 # Utilities
 anyhow = "1.0"

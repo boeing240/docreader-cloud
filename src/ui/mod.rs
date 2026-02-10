@@ -1,3 +1,3 @@
+pub mod document_viewer;
 pub mod sidebar;
-pub mod pdf_viewer;
 pub mod toolbar;

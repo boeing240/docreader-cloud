@@ -44,9 +44,7 @@ impl SyncWatcher {
             Ok(Ok(event)) => {
                 use notify::EventKind;
                 match event.kind {
-                    EventKind::Modify(_) | EventKind::Create(_) => {
-                        Some(SyncEvent::FileModified)
-                    }
+                    EventKind::Modify(_) | EventKind::Create(_) => Some(SyncEvent::FileModified),
                     EventKind::Remove(_) => Some(SyncEvent::FileDeleted),
                     _ => None,
                 }
