@@ -50,6 +50,7 @@ pub struct DocReaderApp {
 
     // UI state
     pub(crate) zoom: f32,
+    pub(crate) pixels_per_point: f32,
     pub(crate) last_save: Instant,
     pub(crate) needs_save: bool,
 
@@ -105,6 +106,7 @@ impl DocReaderApp {
             is_rendering: false,
             first_frame: true,
             zoom: 1.0,
+            pixels_per_point: 1.0,
             last_save: Instant::now(),
             needs_save: false,
             show_settings: false,
@@ -124,11 +126,20 @@ impl eframe::App for DocReaderApp {
         // Restore last opened book on first frame
         if self.first_frame {
             self.first_frame = false;
+            self.pixels_per_point = ctx.pixels_per_point();
             if let Some(book_hash) = self.settings.last_opened_book.clone() {
                 if self.books.iter().any(|b| b.file_hash == book_hash) {
                     book_manager::select_book(self, ctx, &book_hash);
                 }
             }
+        }
+
+        // Track HiDPI scale factor; re-render if it changed
+        let ppp = ctx.pixels_per_point();
+        if (ppp - self.pixels_per_point).abs() > 0.01 {
+            self.pixels_per_point = ppp;
+            self.page_cache.clear();
+            render_manager::request_render(self);
         }
 
         // Background tasks

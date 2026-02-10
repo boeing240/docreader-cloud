@@ -17,8 +17,8 @@ pub(crate) fn request_render(app: &mut DocReaderApp) {
         return;
     };
 
-    // Check cache first
-    let dpi = (96.0 * app.zoom) as u32;
+    // Account for HiDPI: render at native pixel density
+    let dpi = (96.0 * app.zoom * app.pixels_per_point) as u32;
     if let Some(texture) = app.page_cache.get(book_hash, app.current_page, dpi) {
         app.current_texture = Some(texture.clone());
         app.is_rendering = false;
@@ -31,7 +31,7 @@ pub(crate) fn request_render(app: &mut DocReaderApp) {
         book_hash: book_hash.clone(),
         page: app.current_page,
         page_index,
-        zoom: app.zoom,
+        zoom: app.zoom * app.pixels_per_point,
         dpi,
         bytes: Arc::clone(bytes),
         format: book.format,

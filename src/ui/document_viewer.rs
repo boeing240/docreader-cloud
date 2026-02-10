@@ -13,7 +13,10 @@ impl DocumentViewer {
             egui::ScrollArea::both()
                 .auto_shrink([false, false])
                 .show(ui, |ui| {
-                    let size = tex.size_vec2();
+                    // Texture is rendered at native pixel density;
+                    // display in logical points so it appears at the correct size
+                    let ppp = ui.ctx().pixels_per_point();
+                    let size = tex.size_vec2() / ppp;
                     ui.image((tex.id(), size));
                 });
         } else {
