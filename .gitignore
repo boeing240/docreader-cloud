@@ -1,0 +1,10 @@
+/target
+/libs/*.tgz
+/libs/bin/
+/libs/include/
+/libs/lib/
+/libs/licenses/
+/libs/args.gn
+/libs/LICENSE
+/libs/PDFiumConfig.cmake
+/libs/VERSION
