@@ -15,9 +15,10 @@ pub enum ToolbarAction {
 impl Toolbar {
     pub fn show(
         ui: &mut Ui,
-        current_page: u32,
+        _current_page: u32,
         total_pages: u32,
         zoom: f32,
+        page_input: &mut String,
     ) -> Option<ToolbarAction> {
         let mut action = None;
 
@@ -26,7 +27,18 @@ impl Toolbar {
                 action = Some(ToolbarAction::PrevPage);
             }
 
-            ui.label(format!("Страница {} / {}", current_page, total_pages));
+            ui.label("Стр.");
+            let response = ui.add(
+                egui::TextEdit::singleline(page_input)
+                    .desired_width(40.0)
+                    .horizontal_align(egui::Align::Center),
+            );
+            if response.lost_focus() && ui.input(|i| i.key_pressed(egui::Key::Enter)) {
+                if let Ok(page) = page_input.trim().parse::<u32>() {
+                    action = Some(ToolbarAction::GoToPage(page));
+                }
+            }
+            ui.label(format!("/ {}", total_pages));
 
             if ui.button("Вперёд ▶").clicked() {
                 action = Some(ToolbarAction::NextPage);

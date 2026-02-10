@@ -60,6 +60,9 @@ pub struct DocReaderApp {
     pub(crate) settings_library_path: String,
     pub(crate) settings_progress_path: String,
 
+    // Page navigation input
+    pub(crate) page_input: String,
+
     // Error display
     pub(crate) error_message: Option<String>,
 }
@@ -111,6 +114,7 @@ impl DocReaderApp {
             last_save: Instant::now(),
             needs_save: false,
             show_settings: false,
+            page_input: "1".to_string(),
             error_message: None,
         }
     }
@@ -160,7 +164,13 @@ impl eframe::App for DocReaderApp {
 
                 let total_pages = self.selected_book().map(|b| b.total_pages).unwrap_or(0);
 
-                if let Some(action) = Toolbar::show(ui, self.current_page, total_pages, self.zoom) {
+                if let Some(action) = Toolbar::show(
+                    ui,
+                    self.current_page,
+                    total_pages,
+                    self.zoom,
+                    &mut self.page_input,
+                ) {
                     book_manager::handle_toolbar_action(self, action);
                 }
             });
