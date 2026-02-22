@@ -1,4 +1,4 @@
-use egui::{Ui, Vec2};
+use egui::Ui;
 
 pub struct DocumentViewer;
 
@@ -9,17 +9,13 @@ impl DocumentViewer {
         _current_page: u32,
         _total_pages: u32,
         horizontal_offset: &mut f32,
-        is_first_frame: bool,
+        _is_first_frame: bool,
     ) {
         if let Some(tex) = texture {
-            let mut scroll_area = egui::ScrollArea::both()
+            // Use persistent ID so ScrollArea remembers its state
+            let scroll_area = egui::ScrollArea::both()
                 .auto_shrink([false, false])
                 .id_salt("document_viewer_scroll");
-
-            // Only set initial horizontal offset on first frame to avoid breaking vertical scroll
-            if is_first_frame && *horizontal_offset > 0.1 {
-                scroll_area = scroll_area.scroll_offset(Vec2::new(*horizontal_offset, 0.0));
-            }
 
             let output = scroll_area.show(ui, |ui| {
                 // Texture is rendered at native pixel density;
@@ -29,7 +25,8 @@ impl DocumentViewer {
                 ui.image((tex.id(), size));
             });
 
-            // Save current horizontal offset for persistence
+            // Just save current offset for external persistence
+            // Don't try to force it back - let egui handle it
             *horizontal_offset = output.state.offset.x;
         } else {
             ui.centered_and_justified(|ui| {

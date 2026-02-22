@@ -16,6 +16,8 @@ fn main() -> eframe::Result<()> {
             .with_inner_size([WINDOW_INITIAL_WIDTH, WINDOW_INITIAL_HEIGHT])
             .with_min_inner_size([WINDOW_MIN_WIDTH, WINDOW_MIN_HEIGHT])
             .with_title(WINDOW_TITLE),
+        // Enable persistence for egui state (including ScrollArea positions)
+        persist_window: true,
         ..Default::default()
     };
 
