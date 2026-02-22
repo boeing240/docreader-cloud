@@ -54,6 +54,7 @@ pub struct DocReaderApp {
     pub(crate) pixels_per_point: f32,
     pub(crate) last_save: Instant,
     pub(crate) needs_save: bool,
+    pub(crate) current_scroll_offset: (f32, f32),
 
     // Settings dialog
     pub(crate) show_settings: bool,
@@ -113,6 +114,7 @@ impl DocReaderApp {
             pixels_per_point: 1.0,
             last_save: Instant::now(),
             needs_save: false,
+            current_scroll_offset: (0.0, 0.0),
             show_settings: false,
             page_input: "1".to_string(),
             error_message: None,
@@ -239,8 +241,15 @@ impl eframe::App for DocReaderApp {
                 self.current_texture.as_ref(),
                 self.current_page,
                 total_pages,
+                &mut self.current_scroll_offset,
             );
         });
+
+        // Save scroll offset to progress
+        if let Some(book_hash) = &self.selected_book_hash {
+            self.progress
+                .update_scroll_offset(book_hash, self.current_scroll_offset);
+        }
 
         // Settings window
         if self.show_settings {

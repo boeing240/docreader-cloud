@@ -52,6 +52,7 @@ mod tests {
                 total_pages: 100,
                 current_page: 50,
                 last_read: earlier,
+                scroll_offset: (0.0, 0.0),
             },
         );
 
@@ -65,6 +66,7 @@ mod tests {
                 total_pages: 100,
                 current_page: 75,
                 last_read: now,
+                scroll_offset: (0.0, 0.0),
             },
         );
 
@@ -86,6 +88,7 @@ mod tests {
                 total_pages: 200,
                 current_page: 10,
                 last_read: Utc::now(),
+                scroll_offset: (0.0, 0.0),
             },
         );
 
@@ -108,6 +111,7 @@ mod tests {
                 total_pages: 100,
                 current_page: 80,
                 last_read: now,
+                scroll_offset: (0.0, 0.0),
             },
         );
 
@@ -121,6 +125,7 @@ mod tests {
                 total_pages: 100,
                 current_page: 30,
                 last_read: earlier,
+                scroll_offset: (0.0, 0.0),
             },
         );
 
@@ -140,6 +145,7 @@ mod tests {
                 total_pages: 50,
                 current_page: 25,
                 last_read: Utc::now(),
+                scroll_offset: (0.0, 0.0),
             },
         );
 
@@ -175,6 +181,7 @@ mod tests {
                 total_pages: 100,
                 current_page: 10,
                 last_read: earlier,
+                scroll_offset: (0.0, 0.0),
             },
         );
         local.books.insert(
@@ -186,6 +193,7 @@ mod tests {
                 total_pages: 200,
                 current_page: 100,
                 last_read: now,
+                scroll_offset: (0.0, 0.0),
             },
         );
 
@@ -199,6 +207,7 @@ mod tests {
                 total_pages: 100,
                 current_page: 50,
                 last_read: now,
+                scroll_offset: (0.0, 0.0),
             },
         );
         remote.books.insert(
@@ -210,6 +219,7 @@ mod tests {
                 total_pages: 300,
                 current_page: 5,
                 last_read: now,
+                scroll_offset: (0.0, 0.0),
             },
         );
 

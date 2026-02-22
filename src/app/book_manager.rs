@@ -17,13 +17,15 @@ pub(crate) fn select_book(app: &mut DocReaderApp, _ctx: &Context, book_hash: &st
     app.settings.last_opened_book = Some(book_hash.to_string());
     app.current_document_bytes = None;
 
-    // Find book and load saved page
+    // Find book and load saved page and scroll position
     if let Some(bp) = app.progress.books.get(book_hash) {
         app.current_page = bp.current_page;
         app.page_input = bp.current_page.to_string();
+        app.current_scroll_offset = bp.scroll_offset;
     } else {
         app.current_page = 1;
         app.page_input = "1".to_string();
+        app.current_scroll_offset = (0.0, 0.0);
         // Add book to progress
         if let Some(book) = app.books.iter().find(|b| b.file_hash == book_hash) {
             app.progress.add_book(
@@ -67,6 +69,7 @@ pub(crate) fn go_to_page(app: &mut DocReaderApp, page: u32) {
     if new_page != app.current_page {
         app.current_page = new_page;
         app.page_input = new_page.to_string();
+        app.current_scroll_offset = (0.0, 0.0); // Reset scroll on page change
         app.progress.update_book_progress(book_hash, new_page);
         app.needs_save = true;
         render_manager::request_render(app);

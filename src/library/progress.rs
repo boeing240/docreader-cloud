@@ -42,8 +42,16 @@ impl ReadingProgress {
             total_pages,
             current_page: 1,
             last_read: Utc::now(),
+            scroll_offset: (0.0, 0.0),
         };
         self.books.insert(book_hash, book_progress);
+        self.last_modified = Utc::now();
+    }
+
+    pub fn update_scroll_offset(&mut self, book_hash: &str, offset: (f32, f32)) {
+        if let Some(bp) = self.books.get_mut(book_hash) {
+            bp.scroll_offset = offset;
+        }
         self.last_modified = Utc::now();
     }
 }
@@ -56,6 +64,8 @@ pub struct BookProgress {
     pub total_pages: u32,
     pub current_page: u32,
     pub last_read: DateTime<Utc>,
+    #[serde(default)]
+    pub scroll_offset: (f32, f32),
 }
 
 #[allow(dead_code)]
@@ -81,6 +91,7 @@ mod tests {
             total_pages,
             current_page,
             last_read: Utc::now(),
+            scroll_offset: (0.0, 0.0),
         }
     }
 
