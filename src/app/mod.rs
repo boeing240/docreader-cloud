@@ -133,6 +133,9 @@ impl DocReaderApp {
 
 impl eframe::App for DocReaderApp {
     fn update(&mut self, ctx: &Context, _frame: &mut eframe::Frame) {
+        // Save first_frame status before clearing it
+        let is_first_frame = self.first_frame;
+
         // Restore last opened book on first frame
         if self.first_frame {
             self.first_frame = false;
@@ -245,6 +248,7 @@ impl eframe::App for DocReaderApp {
                 self.current_page,
                 total_pages,
                 &mut self.horizontal_scroll_offset,
+                is_first_frame,
             );
         });
 
