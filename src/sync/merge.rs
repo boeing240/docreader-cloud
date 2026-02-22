@@ -53,6 +53,7 @@ mod tests {
                 current_page: 50,
                 last_read: earlier,
                 scroll_offset: (0.0, 0.0),
+                zoom: None,
             },
         );
 
@@ -67,6 +68,7 @@ mod tests {
                 current_page: 75,
                 last_read: now,
                 scroll_offset: (0.0, 0.0),
+                zoom: None,
             },
         );
 
@@ -89,6 +91,7 @@ mod tests {
                 current_page: 10,
                 last_read: Utc::now(),
                 scroll_offset: (0.0, 0.0),
+                zoom: None,
             },
         );
 
@@ -112,6 +115,7 @@ mod tests {
                 current_page: 80,
                 last_read: now,
                 scroll_offset: (0.0, 0.0),
+                zoom: None,
             },
         );
 
@@ -126,6 +130,7 @@ mod tests {
                 current_page: 30,
                 last_read: earlier,
                 scroll_offset: (0.0, 0.0),
+                zoom: None,
             },
         );
 
@@ -146,6 +151,7 @@ mod tests {
                 current_page: 25,
                 last_read: Utc::now(),
                 scroll_offset: (0.0, 0.0),
+                zoom: None,
             },
         );
 
@@ -182,6 +188,7 @@ mod tests {
                 current_page: 10,
                 last_read: earlier,
                 scroll_offset: (0.0, 0.0),
+                zoom: None,
             },
         );
         local.books.insert(
@@ -194,6 +201,7 @@ mod tests {
                 current_page: 100,
                 last_read: now,
                 scroll_offset: (0.0, 0.0),
+                zoom: None,
             },
         );
 
@@ -208,6 +216,7 @@ mod tests {
                 current_page: 50,
                 last_read: now,
                 scroll_offset: (0.0, 0.0),
+                zoom: None,
             },
         );
         remote.books.insert(
@@ -220,6 +229,7 @@ mod tests {
                 current_page: 5,
                 last_read: now,
                 scroll_offset: (0.0, 0.0),
+                zoom: None,
             },
         );
 

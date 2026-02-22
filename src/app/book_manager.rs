@@ -17,15 +17,24 @@ pub(crate) fn select_book(app: &mut DocReaderApp, _ctx: &Context, book_hash: &st
     app.settings.last_opened_book = Some(book_hash.to_string());
     app.current_document_bytes = None;
 
-    // Find book and load saved page and scroll position
+    // Find book and load saved page, scroll position, and zoom
     if let Some(bp) = app.progress.books.get(book_hash) {
         app.current_page = bp.current_page;
         app.page_input = bp.current_page.to_string();
         app.current_scroll_offset = bp.scroll_offset;
+
+        // Restore zoom or use default
+        let new_zoom = bp.zoom.unwrap_or(ZOOM_DEFAULT);
+        if (new_zoom - app.zoom).abs() > 0.001 {
+            app.zoom = new_zoom;
+            app.page_cache.clear();
+        }
     } else {
         app.current_page = 1;
         app.page_input = "1".to_string();
         app.current_scroll_offset = (0.0, 0.0);
+        app.zoom = ZOOM_DEFAULT;
+        app.page_cache.clear();
         // Add book to progress
         if let Some(book) = app.books.iter().find(|b| b.file_hash == book_hash) {
             app.progress.add_book(
@@ -90,16 +99,28 @@ pub(crate) fn handle_toolbar_action(app: &mut DocReaderApp, action: ToolbarActio
         ToolbarAction::ZoomIn => {
             app.zoom = (app.zoom + ZOOM_STEP).min(ZOOM_MAX);
             app.page_cache.clear();
+            if let Some(book_hash) = &app.selected_book_hash {
+                app.progress.update_zoom(book_hash, app.zoom);
+                app.needs_save = true;
+            }
             render_manager::request_render(app);
         }
         ToolbarAction::ZoomOut => {
             app.zoom = (app.zoom - ZOOM_STEP).max(ZOOM_MIN);
             app.page_cache.clear();
+            if let Some(book_hash) = &app.selected_book_hash {
+                app.progress.update_zoom(book_hash, app.zoom);
+                app.needs_save = true;
+            }
             render_manager::request_render(app);
         }
         ToolbarAction::ZoomReset => {
             app.zoom = ZOOM_DEFAULT;
             app.page_cache.clear();
+            if let Some(book_hash) = &app.selected_book_hash {
+                app.progress.update_zoom(book_hash, app.zoom);
+                app.needs_save = true;
+            }
             render_manager::request_render(app);
         }
     }
