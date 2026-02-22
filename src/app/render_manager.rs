@@ -57,7 +57,7 @@ pub(crate) fn poll_render_results(app: &mut DocReaderApp, ctx: &Context) {
                 let texture = ctx.load_texture(
                     format!("page_{}_{}", result.book_hash, result.page),
                     color_image,
-                    egui::TextureOptions::LINEAR,
+                    egui::TextureOptions::NEAREST,
                 );
 
                 app.page_cache
