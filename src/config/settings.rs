@@ -15,6 +15,8 @@ pub struct AppSettings {
     pub auto_save_interval_secs: u64,
     #[serde(default)]
     pub last_opened_book: Option<String>,
+    #[serde(default)]
+    pub horizontal_scroll_offset: f32,
 }
 
 impl Default for AppSettings {
@@ -36,6 +38,7 @@ impl Default for AppSettings {
             zoom_level: ZOOM_DEFAULT,
             auto_save_interval_secs: AUTO_SAVE_INTERVAL_SECS_DEFAULT,
             last_opened_book: None,
+            horizontal_scroll_offset: 0.0,
         }
     }
 }

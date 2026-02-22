@@ -54,6 +54,7 @@ pub struct DocReaderApp {
     pub(crate) pixels_per_point: f32,
     pub(crate) last_save: Instant,
     pub(crate) needs_save: bool,
+    pub(crate) horizontal_scroll_offset: f32,
 
     // Settings dialog
     pub(crate) show_settings: bool,
@@ -92,6 +93,9 @@ impl DocReaderApp {
 
         let (render_tx, result_rx) = render_thread::spawn_render_thread();
 
+        // Save horizontal scroll offset before moving settings
+        let horizontal_scroll_offset = settings.horizontal_scroll_offset;
+
         Self {
             settings_library_path: settings.library_path.to_string_lossy().to_string(),
             settings_progress_path: settings.progress_file_path.to_string_lossy().to_string(),
@@ -113,6 +117,7 @@ impl DocReaderApp {
             pixels_per_point: 1.0,
             last_save: Instant::now(),
             needs_save: false,
+            horizontal_scroll_offset,
             show_settings: false,
             page_input: "1".to_string(),
             error_message: None,
@@ -239,8 +244,12 @@ impl eframe::App for DocReaderApp {
                 self.current_texture.as_ref(),
                 self.current_page,
                 total_pages,
+                &mut self.horizontal_scroll_offset,
             );
         });
+
+        // Save horizontal scroll offset to settings
+        self.settings.horizontal_scroll_offset = self.horizontal_scroll_offset;
 
         // Settings window
         if self.show_settings {
