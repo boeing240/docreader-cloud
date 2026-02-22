@@ -12,29 +12,17 @@ impl DocumentViewer {
         _is_first_frame: bool,
     ) {
         if let Some(tex) = texture {
-            // Get the scroll area state ID
+            // Get current scroll state
             let scroll_id = ui.id().with("document_viewer_scroll");
+            let saved_vertical = egui::scroll_area::State::load(ui.ctx(), scroll_id)
+                .map(|s| s.offset.y)
+                .unwrap_or(0.0);
 
-            // Check if we have saved horizontal offset to restore
-            let mut initial_offset = None;
-            if let Some(state) = egui::scroll_area::State::load(ui.ctx(), scroll_id) {
-                // If saved offset is different from what we want, prepare to override
-                if (*horizontal_offset - state.offset.x).abs() > 1.0 {
-                    initial_offset = Some(Vec2::new(*horizontal_offset, state.offset.y));
-                }
-            } else if *horizontal_offset > 0.1 {
-                // First time, apply saved offset
-                initial_offset = Some(Vec2::new(*horizontal_offset, 0.0));
-            }
-
-            let mut scroll_area = egui::ScrollArea::both()
+            // Always apply saved horizontal offset, preserve vertical from egui state
+            let scroll_area = egui::ScrollArea::both()
                 .auto_shrink([false, false])
-                .id_salt("document_viewer_scroll");
-
-            // Apply initial offset if needed
-            if let Some(offset) = initial_offset {
-                scroll_area = scroll_area.scroll_offset(offset);
-            }
+                .id_salt("document_viewer_scroll")
+                .scroll_offset(Vec2::new(*horizontal_offset, saved_vertical));
 
             let output = scroll_area.show(ui, |ui| {
                 // Texture is rendered at native pixel density;
@@ -44,7 +32,7 @@ impl DocumentViewer {
                 ui.image((tex.id(), size));
             });
 
-            // Always save current horizontal offset
+            // Save current horizontal offset for next frame/session
             *horizontal_offset = output.state.offset.x;
         } else {
             ui.centered_and_justified(|ui| {
