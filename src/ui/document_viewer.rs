@@ -15,14 +15,18 @@ impl DocumentViewer {
             let size = tex.size_vec2() / ppp;
             let available = ui.available_size();
 
-            // Center by default if scroll offset is (0, 0)
-            let mut offset = Vec2::new(scroll_offset.0, scroll_offset.1);
-            if scroll_offset.0 == 0.0 && scroll_offset.1 == 0.0 {
-                // Calculate centered offset
+            // Center on first load only (when both offsets are exactly 0.0)
+            // After user scrolls, save actual position even if it's near 0
+            let should_center = scroll_offset.0 == 0.0 && scroll_offset.1 == 0.0;
+
+            let offset = if should_center {
+                // Calculate centered offset for first display
                 let center_x = ((size.x - available.x) / 2.0).max(0.0);
                 let center_y = ((size.y - available.y) / 2.0).max(0.0);
-                offset = Vec2::new(center_x, center_y);
-            }
+                Vec2::new(center_x, center_y)
+            } else {
+                Vec2::new(scroll_offset.0, scroll_offset.1)
+            };
 
             let scroll_area = egui::ScrollArea::both()
                 .auto_shrink([false, false])
@@ -35,8 +39,17 @@ impl DocumentViewer {
                 ui.image((tex.id(), size));
             });
 
-            // Save scroll offset
-            *scroll_offset = (output.state.offset.x, output.state.offset.y);
+            // Save actual scroll offset from ScrollArea
+            // Only update if it actually changed to avoid feedback loops
+            let actual_offset = output.state.offset;
+            let new_offset = (actual_offset.x, actual_offset.y);
+
+            // Update scroll_offset if it changed significantly (more than 0.1 pixel)
+            if (new_offset.0 - scroll_offset.0).abs() > 0.1
+                || (new_offset.1 - scroll_offset.1).abs() > 0.1
+            {
+                *scroll_offset = new_offset;
+            }
         } else {
             ui.centered_and_justified(|ui| {
                 ui.label("Выберите книгу из библиотеки");
